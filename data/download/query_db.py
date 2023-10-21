@@ -2,12 +2,11 @@ import pandas as pd
 import sqlalchemy as db
 from sqlalchemy import create_engine
 from datetime import datetime
+from print_test import print_test
+from data.procesed.save_df_query import save_query
 import os
 
-def save_query(df, name):
-    path=r'C:\Users\jherrera.FINANCREDITOS\OneDrive - Financreditos S.A.S\NodosLab\Nodos_Report\data\procesed\df'
-    file_path=os.path.join(path, name + '.csv')
-    df.to_csv(file_path, index=False)
+
     
 def read_SQL(cartera=None, date_variables=None):
     def credentialGet():
@@ -37,8 +36,7 @@ def read_SQL(cartera=None, date_variables=None):
         connection = engine.connect()
 
         return (engine, connection)
-    
-    
+       
     date_start  =   date_variables['date_init_month']
     date_end    =   date_variables['date_finish_month']
     user, password, server, database, email_password = credentialGet()
@@ -144,7 +142,6 @@ def read_SQL(cartera=None, date_variables=None):
                 B.COORDINADORA,
                 B.SUCURSAL,
                 B.FECHA_INGRESO,
-                MONTH(A.HISTORY_DATE) as MES,
                 concat(B.NOMBRE, MONTH(A.HISTORY_DATE)) AS llave
             FROM		[dbo].[Promesas]  AS A
             INNER JOIN	[dbo].[Nomina]	  AS B ON A.GESTOR_ID = B.[Usuario Sinfin 1]
@@ -202,6 +199,7 @@ def read_SQL(cartera=None, date_variables=None):
     query_seguimientos_promesas = query_seguimientos_promesas.bindparams(entidad=entidad_sfects)
     result      = connection.execute(query_seguimientos_promesas)
     df_seguimientos_promesas    = pd.DataFrame(result)
+
 # endregion
     
     
@@ -213,8 +211,10 @@ def read_SQL(cartera=None, date_variables=None):
         (df_seguimientos_promesas, 'df_seguimientos_promesas')
     ]
     
+    folder='procesed\df'
     for df, name in dfs:
-        save_query(df, name)
 
+        name_file=name + '-' + cartera
+        save_query(df=df, name=name_file, folder=folder)
 
     return dfs

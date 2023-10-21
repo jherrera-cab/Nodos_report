@@ -36,10 +36,10 @@ def var_date(tipe_report=None, month_report=None):
 
     if day_report.weekday() == 0:
         day_report      =   day_report      -   timedelta(days=2)
-        day_report      =   day_report.strftime('%Y/%m/%d')
+        day_report      =   day_report.strftime('%Y-%m-%d')
     else:
-        day_report      =   day_report      -   timedelta(days=1)
-        day_report      =   day_report.strftime('%Y/%m/%d')
+        day_report      =   day_report      -   timedelta(days=1)#1
+        day_report      =   day_report.strftime('%Y-%m-%d')
 
     current_day = date_init_month
     days_full=1
@@ -82,8 +82,7 @@ def var_date(tipe_report=None, month_report=None):
          
     }
     
-    for index, i in var_config.items():
-        print(f'{index}:\n{i}\n')
+
     
     return var_config
     

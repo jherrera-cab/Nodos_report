@@ -7,5 +7,5 @@ def print_test(var):
     line        =       inspect.currentframe().f_back.f_lineno
     print('\n\n')
     print(f'Control de impresion:\nModulo:{module}\nLinea: {line}\n--------------\n{var}\n--------------\n')
-    print('Detener ejecución')
+    print('Continuar ejecución')
     input()
