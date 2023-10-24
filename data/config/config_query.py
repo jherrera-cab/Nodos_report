@@ -57,6 +57,8 @@ def var_date(tipe_report=None, month_report=None):
     
     num_week = datetime.today().isocalendar()[1]
     
+    path_gestiones=r'C:\Users\jherrera.FINANCREDITOS\OneDrive - Financreditos S.A.S\NodosLab\Nodos_Report\data\procesed\gestiones\df_gestiones'
+    path_df_query=r'C:\Users\jherrera.FINANCREDITOS\OneDrive - Financreditos S.A.S\NodosLab\Nodos_Report\data\procesed\df'
         
     var_config={
         'day_report'        :   day_report,
@@ -77,7 +79,8 @@ def var_date(tipe_report=None, month_report=None):
         'days_full'         :   days_full,              
         'days_medio'        :   days_medio,            
         'hour_total'        :   hour_total,            
-                      
+        'path_df_query'     :   path_df_query,
+        'path_gestiones'    :   path_gestiones
  
          
     }

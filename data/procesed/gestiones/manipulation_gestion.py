@@ -3,7 +3,7 @@ from datetime import timedelta
 import pandas as pd
 from data.procesed.save_df_query import save_query
 
-def manipulation_df_table(df=None, type=None, name=None):  
+def manipulation_gestion_table(df=None, type=None, name=None):  
     
     def custom_count(x, condition):
         return (x == condition).sum()
@@ -70,7 +70,6 @@ def manipulation_df_table(df=None, type=None, name=None):
         
     if type == 1:
         df_result = group_table_gestor(df=df)
-
         df_result = calculate_aht_acw(df_result)
         
         #Cambio de nombre para el encabezado de las nuevas filas

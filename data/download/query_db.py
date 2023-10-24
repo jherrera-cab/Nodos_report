@@ -203,18 +203,19 @@ def read_SQL(cartera=None, date_variables=None):
 # endregion
     
     
-    dfs=[
-        (df_gestion_month, 'df_gestion_month'),
-        (df_goals, 'df_goals'),
-        (df_promises, 'df_promises'),
-        (df_efect, 'df_efect'),
-        (df_seguimientos_promesas, 'df_seguimientos_promesas')
-    ]
-    
-    folder='procesed\df'
-    for df, name in dfs:
+    dfs={
+        f'df_gestion_month-{cartera}' : df_gestion_month,
+        f'df_goals-{cartera}'  : df_goals,
+        f'df_promises-{cartera}'   :   df_promises, 
+        f'df_efect-{cartera}'  :   df_efect,
+        f'df_seguimientos_promesas-{cartera}':df_seguimientos_promesas 
+    }
+        
 
-        name_file=name + '-' + cartera
+    folder='procesed\df'
+    for name, df in dfs.items():
+
+        name_file=name
         save_query(df=df, name=name_file, folder=folder)
 
     return dfs
