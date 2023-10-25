@@ -64,6 +64,7 @@ def manipulation_gestion_table(df=None, type=None, name=None):
             aht             =       ('AHT', 'sum')
         ).reset_index()
         
+        df_result['llave']=df_result['COORDINADORA'] + df_result['MES'].astype(str)
         return df_result
     
     
@@ -73,8 +74,8 @@ def manipulation_gestion_table(df=None, type=None, name=None):
         df_result = calculate_aht_acw(df_result)
         
         #Cambio de nombre para el encabezado de las nuevas filas
-        df_result.loc[len(df_result) - 2, ['NOMBRE','COORDINADORA'] ] = ['Suma','-']
-        df_result.loc[len(df_result) - 1, ['NOMBRE','COORDINADORA'] ] = ['Promedio','-']
+        df_result.loc[len(df_result) - 2, ['NOMBRE','COORDINADORA', 'llave', 'MES'] ] = ['Suma','-', 'Suma10','']
+        df_result.loc[len(df_result) - 1, ['NOMBRE','COORDINADORA', 'llave', 'MES'] ] = ['Promedio','-', 'Promedio10','']
   
         save_query(df=df_result, name=name, folder='procesed\gestiones\df_gestiones')
         
@@ -83,8 +84,8 @@ def manipulation_gestion_table(df=None, type=None, name=None):
         df_result = calculate_aht_acw(df_result)
 
         #Cambio de nombre para el encabezado de las nuevas filas
-        df_result.loc[len(df_result) - 2, ['COORDINADORA'] ] = ['-']
-        df_result.loc[len(df_result) - 1, ['COORDINADORA'] ] = ['-']
+        df_result.loc[len(df_result) - 2, ['COORDINADORA', 'MES'] ] = ['Suma','']
+        df_result.loc[len(df_result) - 1, ['COORDINADORA', 'MES'] ] = ['Promedio','']
        
         save_query(df=df_result, name=name, folder='procesed\gestiones\df_gestiones')
     

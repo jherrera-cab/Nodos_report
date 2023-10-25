@@ -105,7 +105,7 @@ def read_SQL(cartera=None, date_variables=None):
                 B.COORDINADORA,
                 B.SUCURSAL,
                 B.FECHA_INGRESO,
-                MONTH(A.HISTORY_DATE) as MES,
+                
                 concat(B.NOMBRE, MONTH(A.HISTORY_DATE)) AS llave
 	        FROM		[dbo].[Gestiones] AS A
             INNER JOIN	[dbo].[Nomina]	  AS B ON A.GESTOR_ID = B.[Usuario Sinfin 1]

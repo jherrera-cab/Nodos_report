@@ -11,4 +11,6 @@ def manipulation_promises(df_promises=None, tipe_report=None, month_report=None,
                 f'No se genera reporte para el dia {day_report}, ya que no se tiene registro de gestiones.\n'
                 f'-----------------------------')
     else:
-        manipulation_promises_table(df=None, type=None, name=None)
+        manipulation_promises_table(df_promises=promises_day, type=1, name='summary_promises_day')
+        manipulation_promises_table(df_promises=promises_month, type=1, name='summary_promises_month')
+        manipulation_promises_table(df_promises=df_promises, type=2, name='summary_promises_operation_month')
