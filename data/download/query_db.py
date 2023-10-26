@@ -202,13 +202,31 @@ def read_SQL(cartera=None, date_variables=None):
 
 # endregion
     
+    query_aux_logueo= db.text(
+        """
+        SELECT	
+                CAST(FECHA AS date) AS FECHA,
+                CONCAT(DATEPART(HOUR, FECHA), ':', DATEPART(MINUTE, FECHA)) AS HORA,
+                GESTOR_ID,
+                ESTADOANTERIOR,
+                SUM(TIEMPO) / 60000 AS TIME
+        FROM	Maestro_aux
+        WHERE	ENTIDAD_ID= :entidad AND TIEMPO IS NOT NULL 
+        GROUP BY ESTADOANTERIOR, FECHA, GESTOR_ID
+        ORDER BY GESTOR_ID DESC, FECHA ASC
+        """
+    )   
+    query_aux_logueo=query_aux_logueo.bindparams(entidad=entidad_sfects)
+    result =connection.execute(query_aux_logueo)
+    df_master_aux=pd.DataFrame(result)
     
     dfs={
         f'df_gestion_month-{cartera}' : df_gestion_month,
         f'df_goals-{cartera}'  : df_goals,
         f'df_promises-{cartera}'   :   df_promises, 
         f'df_efect-{cartera}'  :   df_efect,
-        f'df_seguimientos_promesas-{cartera}':df_seguimientos_promesas 
+        f'df_seguimientos_promesas-{cartera}':df_seguimientos_promesas,
+        f'df_master_aux-{cartera}':df_master_aux
     }
         
 

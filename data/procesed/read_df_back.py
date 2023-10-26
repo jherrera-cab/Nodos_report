@@ -1,5 +1,7 @@
 import os
 import pandas as pd
+from pathlib import Path
+from print_test import print_test
 
 def read_df_back():
     def list_files_in_folder(folder_path):
@@ -14,8 +16,9 @@ def read_df_back():
         file_paths = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
 
         return file_paths
-
-    folder_path = r'C:\Users\jherrera.FINANCREDITOS\OneDrive - Financreditos S.A.S\NodosLab\Nodos_Report\data\procesed\df'
+    raiz=Path(__file__).resolve().parents[1]
+   
+    folder_path = os.path.join(raiz,'procesed\df')
 
     file_paths = list_files_in_folder(folder_path)
 

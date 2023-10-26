@@ -6,12 +6,14 @@ from data.procesed.gestiones.gestiones import manipulation_gestion
 from data.procesed.promises.promises import manipulation_promises
 from data.procesed.read_df_back import read_df_back
 from data.procesed.merge.merge import merge_df_summary
+from data.procesed.master_aux.master_aux import calculate_aux
 from print_test import print_test
+from pathlib import Path
 
                                                          
 entidades   =       ['NATURA2', 'MIBANCO', 'BANCOSANTANDER', 'NATURGY']
 tipe_report =       ['diario','mensual']
-entidad     =       entidades[0]
+entidad     =       entidades[1]
 date_variables      =   var_date(tipe_report[0], month_report=9)
 
 result      =       check_creation_dates_in_folder(date_variables['path_df_query'], 
@@ -28,11 +30,13 @@ if result == 0:
     print('Se realizo la carga desde el Servidor')
     print('---------------------------------------------------\n')
 else:
+    dic_dfs =   read_df_back()
     print('\n---------------------------------------------------')
     print('Se realizo la carga desde el back de los DataFrame')
     print('---------------------------------------------------\n')
-    dic_dfs =   read_df_back()
+    
 
 manipulation_gestion(df=dic_dfs[f'df_gestion_month-{entidad}'], tipe_report=tipe_report[0], month_report=10, day_report=date_variables['day_report'])
 manipulation_promises(df_promises=dic_dfs[f'df_promises-{entidad}'], tipe_report=tipe_report[0], month_report=10, day_report=date_variables['day_report'])
-merge_df_summary()
+#merge_df_summary()
+calculate_aux(df_merge=dic_dfs[f'df_master_aux-{entidad}']

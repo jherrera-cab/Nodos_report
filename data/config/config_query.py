@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta
 from print_test import print_test
+from pathlib import Path
+import os
 
 def var_date(tipe_report=None, month_report=None):
     
@@ -57,8 +59,10 @@ def var_date(tipe_report=None, month_report=None):
     
     num_week = datetime.today().isocalendar()[1]
     
-    path_gestiones=r'C:\Users\jherrera.FINANCREDITOS\OneDrive - Financreditos S.A.S\NodosLab\Nodos_Report\data\procesed\gestiones\df_gestiones'
-    path_df_query=r'C:\Users\jherrera.FINANCREDITOS\OneDrive - Financreditos S.A.S\NodosLab\Nodos_Report\data\procesed\df'
+    raiz=Path(__file__).resolve().parents[1]
+
+    path_gestiones=os.path.join(raiz,'procesed\gestiones\df_gestiones')
+    path_df_query=os.path.join(raiz,'procesed\df')
         
     var_config={
         'day_report'        :   day_report,

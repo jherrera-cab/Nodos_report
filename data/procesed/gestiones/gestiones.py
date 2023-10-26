@@ -3,7 +3,6 @@ from data.procesed.gestiones.manipulation_gestion import manipulation_gestion_ta
 import pandas as pd
 
 def manipulation_gestion(df=None, tipe_report=None, month_report=None, day_report=None):
-    gestion_month   =   df
     df['FECHA']     =   pd.to_datetime(df['FECHA'], errors='coerce')
     gestion_day     =   df[df['FECHA'] == day_report]
     if len(gestion_day) <=1:
