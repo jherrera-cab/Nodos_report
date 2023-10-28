@@ -4,7 +4,9 @@ import pandas as pd
 
 def manipulation_gestion(df=None, tipe_report=None, month_report=None, day_report=None):
     df['FECHA']     =   pd.to_datetime(df['FECHA'], errors='coerce')
+    df=df.sort_values(by= 'FECHA', ascending=False)
     gestion_day     =   df[df['FECHA'] == day_report]
+
     if len(gestion_day) <=1:
         print(  f'-----------------------------\n' 
                 f'No se genera reporte para el dia {day_report}, ya que no se tiene registro de gestiones.\n'

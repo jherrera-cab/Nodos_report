@@ -66,8 +66,7 @@ def manipulation_gestion_table(df=None, type=None, name=None):
         
         df_result['llave']=df_result['COORDINADORA'] + df_result['MES'].astype(str)
         return df_result
-    
-    
+        
         
     if type == 1:
         df_result = group_table_gestor(df=df)

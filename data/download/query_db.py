@@ -8,8 +8,9 @@ import os
 
 
     
-def read_SQL(cartera=None, date_variables=None):
+def read_SQL(cartera=None, date_variables=None, month_report=None):
     def credentialGet():
+        
         # Asignación de variables para la conexion de la base SQL
         user = os.environ.get("user_server")
         if user in os.environ:
@@ -29,13 +30,18 @@ def read_SQL(cartera=None, date_variables=None):
         return (user, password, server, database, email_password)
 
     def connectSQL(user, password, server, database):
-        
+
         engine = create_engine(
             f"mssql+pyodbc://{server}/{database}?UID={user};PWD={password}&driver=ODBC+Driver+17+for+SQL+Server"
         )
         connection = engine.connect()
 
         return (engine, connection)
+
+    if cartera == 'NATURA2':
+        entidad_sfects = 'NATURA'
+    else:
+        entidad_sfects = cartera
        
     date_start  =   date_variables['date_init_month']
     date_end    =   date_variables['date_finish_month']
@@ -156,10 +162,7 @@ def read_SQL(cartera=None, date_variables=None):
 # endregion
 
 # region LECTURA MEJOR ULTIMO EFECTO
-    if cartera == 'NATURA2':
-        entidad_sfects = 'NATURA'
-    else:
-        entidad_sfects = cartera
+
             
     query_efect = db.text(
         """
@@ -174,10 +177,6 @@ def read_SQL(cartera=None, date_variables=None):
 # endregion
    
 # region LECTURA SEGUIMIENTO DE PROMESAS
-    if cartera == 'NATURA2':
-        entidad_sfects = 'NATURA'
-    else:
-        entidad_sfects = cartera
             
     query_seguimientos_promesas = db.text(
         """
@@ -201,24 +200,36 @@ def read_SQL(cartera=None, date_variables=None):
     df_seguimientos_promesas    = pd.DataFrame(result)
 
 # endregion
-    
+
+# region LECTURA SEGUIMIENTO DE PROMESAS    
+
+    if cartera == 'NATURA':
+        entidad_efects = 'NATURA2'
+    else:
+        entidad_efects = cartera
+        
     query_aux_logueo= db.text(
         """
         SELECT	
-                CAST(FECHA AS date) AS FECHA,
-                CONCAT(DATEPART(HOUR, FECHA), ':', DATEPART(MINUTE, FECHA)) AS HORA,
-                GESTOR_ID,
-                ESTADOANTERIOR,
+                CAST(FECHA AS date) AS DATE,
+                CONCAT(DATEPART(HOUR, FECHA), ':', DATEPART(MINUTE, FECHA)) AS HOUR,
+                MONTH(FECHA) AS MONTH,
+                GESTOR_ID AS NAME,
+                ESTADOANTERIOR as AUX,
                 SUM(TIEMPO) / 60000 AS TIME
         FROM	Maestro_aux
-        WHERE	ENTIDAD_ID= :entidad AND TIEMPO IS NOT NULL 
+        WHERE	ENTIDAD_ID= :entidad AND TIEMPO IS NOT NULL AND MONTH(FECHA)= :month_filter
         GROUP BY ESTADOANTERIOR, FECHA, GESTOR_ID
-        ORDER BY GESTOR_ID DESC, FECHA ASC
+        ORDER BY  FECHA ASC, GESTOR_ID DESC
         """
     )   
-    query_aux_logueo=query_aux_logueo.bindparams(entidad=entidad_sfects)
+
+    query_aux_logueo=query_aux_logueo.bindparams(entidad=entidad_efects, month_filter=month_report)
     result =connection.execute(query_aux_logueo)
     df_master_aux=pd.DataFrame(result)
+    
+  
+# endregion
     
     dfs={
         f'df_gestion_month-{cartera}' : df_gestion_month,
