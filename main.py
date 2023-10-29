@@ -17,16 +17,17 @@ entidad     =       entidades[0]
 month_report=       10
 date_variables      =   var_date(tipe_report[0], month_report=month_report)
 
-result      =       check_creation_dates_in_folder(date_variables['path_df_query'], 
+result, faltantes      =       check_creation_dates_in_folder(date_variables['path_df_query'], 
                                                    date_variables['path_gestiones'],
                                                    entidad, 
                                                    date_variables['date_init_30'])
 
 
-if result == 0:
+if result == 0 or len(faltantes) > 0:
     engine, connection  =   connectSQL()
     date_init_month     =   date_variables['date_init_month']
-    dic_dfs = read_SQL(cartera=entidad, date_variables=date_variables, month_report=month_report)
+    read_SQL(cartera=entidad, date_variables=date_variables, month_report=month_report, faltantes=faltantes)
+    dic_dfs =   read_df_back()
     manipulation_gestion(df=dic_dfs[f'df_gestion_month-{entidad}'], tipe_report=tipe_report[0], month_report=10, day_report=date_variables['day_report'])
     manipulation_promises(df_promises=dic_dfs[f'df_promises-{entidad}'], tipe_report=tipe_report[0], month_report=10, day_report=date_variables['day_report'])
     print('\n---------------------------------------------------')
@@ -40,6 +41,4 @@ else:
     
 
 merge_df_summary()
-print_test(dic_dfs[f'df_master_aux-{entidad}'])
-print_test(len(dic_dfs[f'df_master_aux-{entidad}']))
 calculate_aux(df_master_aux=dic_dfs[f'df_master_aux-{entidad}'], month_report=month_report)

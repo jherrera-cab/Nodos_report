@@ -22,8 +22,18 @@ def check_creation_dates_in_folder(path_df_query,
                                    entidad, 
                                    date):
     
-    files = [f for f in os.listdir(path_df_query) if os.path.isfile(os.path.join(path_df_query, f))]
+    dfs=[
+        f'df_gestion_month-{entidad}',
+        f'df_goals-{entidad}',
+        f'df_promises-{entidad}', 
+        f'df_efect-{entidad}',
+        f'df_seguimientos_promesas-{entidad}',
+        f'df_master_aux-{entidad}'
+        ]
     
+    
+    files = [f for f in os.listdir(path_df_query) if os.path.isfile(os.path.join(path_df_query, f))]
+
     date_creation=[]
     for file in files:
         path_file=os.path.join(path_df_query, file)
@@ -32,14 +42,36 @@ def check_creation_dates_in_folder(path_df_query,
     creation_dates = [get_creation_date(os.path.join(path_df_query, f)).date() for f in files]
     date=date.today().date()
 
-        
+
+    
     dfs=os.listdir(path_df_query)
+    
     for df in dfs:
         name_ext, ext = df.split('.')
         name, sufijo=name_ext.split('-')
         if sufijo != entidad:
             file=os.path.join(path_df_query, df)
             os.remove(file)
+            
+    dfs_esperados=(
+        'df_goals',
+        'df_gestion_month',
+        'df_promises',
+        'df_efect',
+        'df_seguimientos_promesas',
+        'df_master_aux'
+    )       
+    dic_file=[]
+    for i in dfs:
+        name_csv=i.split('-')
+        dic_file.append(name_csv[0])
+        
+
+    indice=[]
+    for i, index in enumerate(dfs_esperados):
+        if index not in dic_file:   
+            indice.append(i)
+        
             
     # Comprueba si todas las fechas de creación son iguales
     q_file=len(os.listdir(path_df_query))
@@ -52,8 +84,8 @@ def check_creation_dates_in_folder(path_df_query,
                 for file_gestion in os.listdir(path_gestiones):
                     file_gestion_name = os.path.join(path_gestiones, file_gestion)
                     os.remove(file_gestion_name)
-            return 0
+            return 0, indice
         else:
-            return 1
+            return 1, indice
     else:
-        return 0
+        return 0, indice
