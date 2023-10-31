@@ -7,6 +7,7 @@ from data.procesed.promises.promises import manipulation_promises
 from data.procesed.read_df_back import read_df_back
 from data.procesed.merge.merge import merge_df_summary
 from data.procesed.master_aux.master_aux import calculate_aux
+from data.procesed.goals.goals import calculate_goal
 from print_test import print_test
 from pathlib import Path
 
@@ -41,4 +42,5 @@ else:
     
 
 merge_df_summary()
-calculate_aux(df_master_aux=dic_dfs[f'df_master_aux-{entidad}'], month_report=month_report)
+calculate_aux(df_master_aux=dic_dfs[f'df_master_aux-{entidad}'], month_report=month_report, day_report=date_variables['day_report'])
+calculate_goal()

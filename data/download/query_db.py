@@ -202,13 +202,16 @@ def read_SQL(cartera=None, date_variables=None, month_report=None, faltantes=Non
                     CAST(FECHA AS date) AS DATE,
                     CONCAT(DATEPART(HOUR, FECHA), ':', RIGHT('0' + CAST(DATEPART(MINUTE, FECHA) AS VARCHAR), 2)) AS HOUR,
                     MONTH(FECHA) AS MONTH,
-                    GESTOR_ID AS NAME,
+                    DATEPART(ISO_WEEK, FECHA) AS NUM_WEEK,
+                    COORDINADORA,
+                    Nombre AS NOMBRE,
                     ESTADOANTERIOR as AUX,
                     SUM(TIEMPO) / 60000 AS TIME
-            FROM	Maestro_aux
+            FROM	Maestro_aux as a
+            inner join [dbo].[Nomina] as b on A.gestor_id = b.[Usuario Sinfin 1]
             WHERE	ENTIDAD_ID= :entidad AND TIEMPO IS NOT NULL AND MONTH(FECHA)= :month_filter
-            GROUP BY ESTADOANTERIOR, FECHA, GESTOR_ID
-            ORDER BY  FECHA ASC, GESTOR_ID DESC
+            GROUP BY ESTADOANTERIOR, FECHA, nombre, COORDINADORA
+            ORDER BY  FECHA ASC, nombre DESC
             """
         )   
 
