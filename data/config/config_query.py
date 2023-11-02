@@ -22,7 +22,7 @@ def var_date(tipe_report=None, month_report=None):
     date_finish_month_n1 = date_finish_month.replace(month=month_report-1)
     
     date_init_month_n2 = date_init_month.replace(month=month_report-2)
-    date_finish_month_n2 = date_finish_month.replace(month=month_report-2)
+    date_finish_month_n2 = date_finish_month.replace(month=month_report-2, day=30)
     
     date_init_month_n3 = date_init_month.replace(month=month_report-3)
     date_finish_month_n3 = date_finish_month.replace(month=month_report-3)

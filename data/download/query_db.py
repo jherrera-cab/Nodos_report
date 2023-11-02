@@ -36,6 +36,7 @@ def read_SQL(cartera=None, date_variables=None, month_report=None, faltantes=Non
         connection = engine.connect()
         return (engine, connection)
 
+    #df_goals
     def read_db_0(cartera):
             x=1
             query_goals = db.text(
@@ -61,7 +62,8 @@ def read_SQL(cartera=None, date_variables=None, month_report=None, faltantes=Non
             result = connection.execute(query_goals)
             df_goals = pd.DataFrame(result)
             save_query(df=df_goals, name=f'df_goals-{cartera}', folder=folder)
-               
+    
+    #df_gestion_month           
     def read_db_1(cartera):
         
         date_start_formated, date_end_formated = date_variables['date_init_month_n3'].strftime("%Y-%m-%d"), date_end.strftime("%Y-%m-%d")
@@ -113,7 +115,8 @@ def read_SQL(cartera=None, date_variables=None, month_report=None, faltantes=Non
         result = connection.execute(query)
         df_gestion_month = pd.DataFrame(result)
         save_query(df=df_gestion_month, name=f'df_gestion_month-{cartera}', folder=folder)
-        
+    
+    #df_promises    
     def read_db_2(cartera):
 # region LECTURA PROMESAS MES EN CURSO 
         date_start_formated, date_end_formated = date_variables['date_init_month_n3'].strftime("%Y-%m-%d"), date_end.strftime("%Y-%m-%d")
@@ -152,6 +155,7 @@ def read_SQL(cartera=None, date_variables=None, month_report=None, faltantes=Non
         save_query(df=df_promises, name=f'df_promises-{cartera}', folder=folder)
 # endregion
 
+    #df_efect
     def read_db_3(cartera):
 # region LECTURA MEJOR ULTIMO EFECTO
         query_efect = db.text(
@@ -167,6 +171,7 @@ def read_SQL(cartera=None, date_variables=None, month_report=None, faltantes=Non
         save_query(df=df_efect, name=f'df_efect-{cartera}', folder=folder)
 # endregion
     
+    #df_seguimientos_promesas
     def read_db_4(cartera):
 # region LECTURA SEGUIMIENTO DE PROMESAS
             
@@ -193,7 +198,8 @@ def read_SQL(cartera=None, date_variables=None, month_report=None, faltantes=Non
         save_query(df=df_seguimientos_promesas, name=f'df_seguimientos_promesas-{cartera}', folder=folder)
 
 # endregion
-
+    
+    #df_master_aux
     def read_db_5(cartera):
         # region LECTURA MESTRO AUX 
         query_aux_logueo= db.text(
@@ -203,6 +209,7 @@ def read_SQL(cartera=None, date_variables=None, month_report=None, faltantes=Non
                     CONCAT(DATEPART(HOUR, FECHA), ':', RIGHT('0' + CAST(DATEPART(MINUTE, FECHA) AS VARCHAR), 2)) AS HOUR,
                     MONTH(FECHA) AS MONTH,
                     DATEPART(ISO_WEEK, FECHA) AS NUM_WEEK,
+                    DATEPART(DW, FECHA) AS NUM_DAY,
                     COORDINADORA,
                     Nombre AS NOMBRE,
                     ESTADOANTERIOR as AUX,

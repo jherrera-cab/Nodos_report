@@ -2,6 +2,9 @@ from data.conect.conect_db import connectSQL
 from data.download.query_db import read_SQL
 from data.config.config_query import var_date
 from data.procesed.save_df_query import check_creation_dates_in_folder
+# The line `from data.procesed.gestiones.gestiones import manipulation_gestion` is importing the
+# `manipulation_gestion` function from the `gestiones` module in the `data.procesed.gestiones`
+# package. This allows the `manipulation_gestion` function to be used in the current script.
 from data.procesed.gestiones.gestiones import manipulation_gestion
 from data.procesed.promises.promises import manipulation_promises
 from data.procesed.read_df_back import read_df_back
@@ -15,7 +18,7 @@ from pathlib import Path
 entidades   =       ['NATURA2', 'MIBANCO', 'BANCOSANTANDER', 'NATURGY']
 tipe_report =       ['diario','mensual']
 entidad     =       entidades[0]
-month_report=       10
+month_report=       11
 date_variables      =   var_date(tipe_report[0], month_report=month_report)
 
 result, faltantes      =       check_creation_dates_in_folder(date_variables['path_df_query'], 
@@ -42,5 +45,5 @@ else:
     
 
 merge_df_summary()
-calculate_aux(df_master_aux=dic_dfs[f'df_master_aux-{entidad}'], month_report=month_report, day_report=date_variables['day_report'])
-calculate_goal()
+calculate_aux(df_master_aux=dic_dfs[f'df_master_aux-{entidad}'], entidad = entidad, month_report=month_report, day_report=date_variables['day_report'])
+calculate_goal(entidad=entidad, num_day=date_variables['num_day_week'])
