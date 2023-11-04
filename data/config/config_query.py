@@ -3,7 +3,7 @@ from print_test import print_test
 from pathlib import Path
 import os
 
-def var_date(tipe_report=None, month_report=None):
+def var_date(tipe_report=None, month_report=None, entidad=None):
     
  
     
@@ -63,6 +63,24 @@ def var_date(tipe_report=None, month_report=None):
 
     path_gestiones=os.path.join(raiz,'procesed\gestiones\df_gestiones')
     path_df_query=os.path.join(raiz,'procesed\df')
+    
+    path_doc_input  =   fr"Z:\1. Coordinadores\2. Jonathan Herrera\Estrategia\Reportes seguimiento\Plantilla reporte.docx"
+    folder_report   =   fr'Z:\1. Coordinadores\2. Jonathan Herrera\Estrategia\Reportes seguimiento'
+    date_formatted  =   day_report.replace(day=day_report-1)
+    name_doc        =   entidad + ' ' + date_formatted + '.docx'
+    name_xls        =   'Seguimientos ' + entidad + ' ' + date_formatted + '.xlsx'
+    path_doc_output =   os.path.join(folder_report, entidad, name_doc) 
+    path_xls_output =   os.path.join(folder_report, entidad, name_xls) 
+    
+    
+    var_path        =[
+        entidad,
+        date_formatted,
+        path_doc_input,
+        path_doc_output,
+        path_xls_output
+    ]
+    
         
     var_config={
         'day_report'        :   day_report,
@@ -84,8 +102,10 @@ def var_date(tipe_report=None, month_report=None):
         'days_medio'        :   days_medio,            
         'hour_total'        :   hour_total,            
         'path_df_query'     :   path_df_query,
-        'path_gestiones'    :   path_gestiones
- 
+        'path_gestiones'    :   path_gestiones,
+        'path_doc_input'    :   path_doc_input,
+        'path_doc_output'   :   path_doc_output,
+        'path_xls_output'   :   path_xls_output
          
     }
     

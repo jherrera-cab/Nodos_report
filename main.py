@@ -11,7 +11,9 @@ from data.procesed.read_df_back import read_df_back
 from data.procesed.merge.merge import merge_df_summary
 from data.procesed.master_aux.master_aux import calculate_aux
 from data.procesed.goals.goals import calculate_goal
+from data.procesed.acw.acw import calculate_acw
 from print_test import print_test
+from reports.doc.render import render_report
 from pathlib import Path
 
                                                          
@@ -19,7 +21,7 @@ entidades   =       ['NATURA2', 'MIBANCO', 'BANCOSANTANDER', 'NATURGY']
 tipe_report =       ['diario','mensual']
 entidad     =       entidades[0]
 month_report=       11
-date_variables      =   var_date(tipe_report[0], month_report=month_report)
+date_variables      =   var_date(tipe_report[0], month_report=month_report, entidad=entidad)
 
 result, faltantes      =       check_creation_dates_in_folder(date_variables['path_df_query'], 
                                                    date_variables['path_gestiones'],
@@ -44,6 +46,8 @@ else:
     print('---------------------------------------------------\n')
     
 
-merge_df_summary()
-calculate_aux(df_master_aux=dic_dfs[f'df_master_aux-{entidad}'], entidad = entidad, month_report=month_report, day_report=date_variables['day_report'])
-calculate_goal(entidad=entidad, num_day=date_variables['num_day_week'])
+#merge_df_summary()
+#calculate_aux(df_master_aux=dic_dfs[f'df_master_aux-{entidad}'], entidad = entidad, month_report=month_report, day_report=date_variables['day_report'])
+#calculate_goal(entidad=entidad, num_day=date_variables['num_day_week'])
+#calculate_acw(df_gestiones=dic_dfs[f'df_gestion_month-{entidad}'], day_report=date_variables['day_report'])
+render_report(date_variables)
