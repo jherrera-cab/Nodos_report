@@ -52,7 +52,8 @@ def merge_df_summary():
     folder_promises= r'promises\df_promises'
     dfs_gestion_summary=read_df_summary(folder_gestion)
     dfs_promises_summary=read_df_summary(folder_promises)
-        
+
+    
     dfs_merge=merge_summary_df(dfs_gestion=dfs_gestion_summary, dfs_promises=dfs_promises_summary)
     
     

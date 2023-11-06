@@ -2,7 +2,7 @@ import pandas as pd
 from print_test import print_test
 from data.procesed.save_df_query import save_query
 
-def calculate_goal(entidad=None, num_day=None):
+def calculate_goal(entidad=None, date_variables=None):
     def color_percentil(kpi):
         color={
             'top':'#a7c957',
@@ -39,7 +39,7 @@ def calculate_goal(entidad=None, num_day=None):
 
             
     def calculate_goal_df(df_aux=None, df_goal=None, df_result = None):
-        
+        num_day=date_variables['num_day_week']
         hour_expected = 4 if num_day == 0 else 9
            
         weight_gestion              =   float(df_goal['peso_gestion'].iloc[0])
@@ -97,9 +97,27 @@ def calculate_goal(entidad=None, num_day=None):
     df_merge_aux_result_month= calculate_goal_df(df_aux=df_aux_day, df_goal= df_goal, df_result = df_result_month)
     df_result_day=row_total_mean(df_merge_aux_result_day)
     df_result_month=row_total_mean(df_merge_aux_result_month)
+
+    data={
+        'coordinador'         : df_goal['coordinador_nacional'],
+        'Meta_gestiones_hora' : df_goal['meta_gestion'],      
+        'Meta_contacto_hora'  : df_goal['meta_contacto'],         
+        'Meta_promesas_hora'  : df_goal['meta_promesas'],     
+        'Meta_gestiones_dia'  : df_goal['meta_gestion']     * date_variables['time_day'],    
+        'Meta_contacto_dia'   : df_goal['meta_contacto']    * date_variables['time_day'],    
+        'Meta_promesas_dia'   : df_goal['meta_promesas']    * date_variables['time_day'],    
+        'Meta_gestiones_mes'  : df_goal['meta_gestion']     * date_variables['hour_total'] ,
+        'Meta_contacto_mes'   : round(df_goal['meta_contacto']    * date_variables['hour_total'],2),
+        'Meta_promesas_mes'   : df_goal['meta_promesas']    * date_variables['hour_total'],
+        'Total_horas'         : date_variables['hour_total'] 
+    }
+         
+    df_kpi_report=pd.DataFrame(data)
+    folder=r'procesed\goals\goals_df'
+    save_query(df=df_kpi_report, name='df_kpi_report', folder=folder)
+    save_query(df=df_result_day, name='df_merge_aux_result_day', folder=folder)
+    save_query(df=df_result_month, name='df_merge_aux_result_month', folder=folder)
     
-    save_query(df=df_result_day, name='df_merge_aux_result_day', folder=r'procesed\goals\goals_df')
-    save_query(df=df_result_month, name='df_merge_aux_result_month', folder=r'procesed\goals\goals_df')
-    
+    return df_kpi_report
 
     

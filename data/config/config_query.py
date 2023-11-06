@@ -35,19 +35,24 @@ def var_date(tipe_report=None, month_report=None, entidad=None):
     weeks           =   0
     
     day_report      =   datetime.today() 
-
+    to_day          =   datetime.today().strftime('%Y-%m-%d')
+            
     if day_report.weekday() == 0:
         day_report      =   day_report      -   timedelta(days=2)
         day_report      =   day_report.strftime('%Y-%m-%d')
+        time_day        =   4
     else:
         day_report      =   day_report      -   timedelta(days=1)#1
         day_report      =   day_report.strftime('%Y-%m-%d')
+        time_day        =   9
+        
 
     current_day = date_init_month
     days_full=1
     while current_day <= date_finish_month - timedelta(days=1):
         if current_day.weekday() <= 4:  # 0 a 4 representan días laborables (lunes a viernes)
             days_full += 1
+            
         elif current_day.weekday() == 5:  # 5 representa el sábado
             days_medio += 1
         if current_day.weekday() == 6:
@@ -66,20 +71,11 @@ def var_date(tipe_report=None, month_report=None, entidad=None):
     
     path_doc_input  =   fr"Z:\1. Coordinadores\2. Jonathan Herrera\Estrategia\Reportes seguimiento\Plantilla reporte.docx"
     folder_report   =   fr'Z:\1. Coordinadores\2. Jonathan Herrera\Estrategia\Reportes seguimiento'
-    date_formatted  =   day_report.replace(day=day_report-1)
-    name_doc        =   entidad + ' ' + date_formatted + '.docx'
-    name_xls        =   'Seguimientos ' + entidad + ' ' + date_formatted + '.xlsx'
+    
+    name_doc        =   entidad + ' ' + day_report + '.docx'
+    name_xls        =   'Seguimientos ' + entidad + ' ' + day_report + '.xlsx'
     path_doc_output =   os.path.join(folder_report, entidad, name_doc) 
     path_xls_output =   os.path.join(folder_report, entidad, name_xls) 
-    
-    
-    var_path        =[
-        entidad,
-        date_formatted,
-        path_doc_input,
-        path_doc_output,
-        path_xls_output
-    ]
     
         
     var_config={
@@ -105,8 +101,9 @@ def var_date(tipe_report=None, month_report=None, entidad=None):
         'path_gestiones'    :   path_gestiones,
         'path_doc_input'    :   path_doc_input,
         'path_doc_output'   :   path_doc_output,
-        'path_xls_output'   :   path_xls_output
-         
+        'path_xls_output'   :   path_xls_output,
+        'time_day'          :   time_day,
+        'to_day'            :   to_day
     }
     
 

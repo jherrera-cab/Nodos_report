@@ -14,13 +14,15 @@ from data.procesed.goals.goals import calculate_goal
 from data.procesed.acw.acw import calculate_acw
 from print_test import print_test
 from reports.doc.render import render_report
+from reports.convert_list.convert import df_to_list
+from reports.doc.read_dfs import read_dfs
 from pathlib import Path
 
                                                          
 entidades   =       ['NATURA2', 'MIBANCO', 'BANCOSANTANDER', 'NATURGY']
 tipe_report =       ['diario','mensual']
-entidad     =       entidades[0]
-month_report=       11
+entidad     =       entidades[1]
+month_report=       10
 date_variables      =   var_date(tipe_report[0], month_report=month_report, entidad=entidad)
 
 result, faltantes      =       check_creation_dates_in_folder(date_variables['path_df_query'], 
@@ -34,8 +36,8 @@ if result == 0 or len(faltantes) > 0:
     date_init_month     =   date_variables['date_init_month']
     read_SQL(cartera=entidad, date_variables=date_variables, month_report=month_report, faltantes=faltantes)
     dic_dfs =   read_df_back()
-    manipulation_gestion(df=dic_dfs[f'df_gestion_month-{entidad}'], tipe_report=tipe_report[0], month_report=10, day_report=date_variables['day_report'])
-    manipulation_promises(df_promises=dic_dfs[f'df_promises-{entidad}'], tipe_report=tipe_report[0], month_report=10, day_report=date_variables['day_report'])
+    manipulation_gestion(df=dic_dfs[f'df_gestion_month-{entidad}'], tipe_report=tipe_report[0], month_report=month_report, day_report=date_variables['day_report'])
+    manipulation_promises(df_promises=dic_dfs[f'df_promises-{entidad}'], tipe_report=tipe_report[0], month_report=month_report, day_report=date_variables['day_report'])
     print('\n---------------------------------------------------')
     print('Se realizo la carga desde el Servidor')
     print('---------------------------------------------------\n')
@@ -48,6 +50,18 @@ else:
 
 #merge_df_summary()
 #calculate_aux(df_master_aux=dic_dfs[f'df_master_aux-{entidad}'], entidad = entidad, month_report=month_report, day_report=date_variables['day_report'])
-#calculate_goal(entidad=entidad, num_day=date_variables['num_day_week'])
+#df_kpi_report = calculate_goal(entidad=entidad, date_variables=date_variables)
+#var_list    =df_to_list(df_kpi_report)
 #calculate_acw(df_gestiones=dic_dfs[f'df_gestion_month-{entidad}'], day_report=date_variables['day_report'])
-render_report(date_variables)
+dfs_report = read_dfs()
+# conversión dfs a lista de acw por semana
+cont = 1
+dic_lists={}
+for i in dfs_report[1]:
+    if len(dfs_report[1]) >= cont:
+        dic_lists[f'acw_week_{cont}']= df_to_list(dfs_report[1][f'summary_acw_weeks_{cont}'])
+    else:
+        dic_lists[f'acw_week_{cont}']=None
+    cont += 1
+print_test(dic_lists['acw_week_1'])
+#render_report(date_variables, entidad, df_kpi_report, dic_lists)

@@ -16,6 +16,28 @@ def get_creation_date(file_path):
     date_creation_file=datetime.fromtimestamp(os.path.getctime(file_path))
     return date_creation_file
 
+def validate_df_lost(dfs=None):
+        dfs_esperados=(
+            'df_goals',
+            'df_gestion_month',
+            'df_promises',
+            'df_efect',
+            'df_seguimientos_promesas',
+            'df_master_aux'
+        )       
+        dic_file=[]
+        for i in dfs:
+            name_csv=i.split('-')
+            dic_file.append(name_csv[0])
+            
+
+        indice=[]
+        for i, index in enumerate(dfs_esperados):
+            if index not in dic_file:   
+                indice.append(i)
+                
+        return indice
+
 
 def check_creation_dates_in_folder(path_df_query, 
                                    path_gestiones, 
@@ -53,30 +75,16 @@ def check_creation_dates_in_folder(path_df_query,
             file=os.path.join(path_df_query, df)
             os.remove(file)
             
-    dfs_esperados=(
-        'df_goals',
-        'df_gestion_month',
-        'df_promises',
-        'df_efect',
-        'df_seguimientos_promesas',
-        'df_master_aux'
-    )       
-    dic_file=[]
-    for i in dfs:
-        name_csv=i.split('-')
-        dic_file.append(name_csv[0])
-        
 
-    indice=[]
-    for i, index in enumerate(dfs_esperados):
-        if index not in dic_file:   
-            indice.append(i)
         
             
     # Comprueba si todas las fechas de creación son iguales
     q_file=len(os.listdir(path_df_query))
+    indice= validate_df_lost(dfs=dfs)
     if q_file >= 1:
+        
         if date != creation_dates[0]:
+            indice= validate_df_lost(dfs=dfs)
             for filename in os.listdir(path_df_query):
                 file=os.path.join(path_df_query, filename)
                 os.remove(file)
@@ -84,8 +92,11 @@ def check_creation_dates_in_folder(path_df_query,
                 for file_gestion in os.listdir(path_gestiones):
                     file_gestion_name = os.path.join(path_gestiones, file_gestion)
                     os.remove(file_gestion_name)
+                    indice= validate_df_lost(dfs=dfs)
             return 0, indice
         else:
             return 1, indice
     else:
         return 0, indice
+    
+    

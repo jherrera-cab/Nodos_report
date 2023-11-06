@@ -4,8 +4,10 @@ from data.procesed.save_df_query import save_query
 from datetime import timedelta
 
 def manipulation_gestion(df=None, tipe_report=None, month_report=None, day_report=None):
+
     df['FECHA']     =   pd.to_datetime(df['FECHA'], errors='coerce')
     df=df.sort_values(by= 'FECHA', ascending=False)
+    
     gestion_day     =   df[df['FECHA'] == day_report]
 
     if len(gestion_day) <=1:
@@ -13,12 +15,13 @@ def manipulation_gestion(df=None, tipe_report=None, month_report=None, day_repor
                 f'No se genera reporte para el dia {day_report}, ya que no se tiene registro de gestiones.\n'
                 f'-----------------------------')
     else:
-        manipulation_gestion_table(df=gestion_day, type=1, name='summary_gestion_day')
-        manipulation_gestion_table(df=df, type=1, name='summary_gestion_month')
-        manipulation_gestion_table(df=df, type=2, name='summary_gestion_operation_month')
+        manipulation_gestion_table(df=gestion_day, type=1, name='summary_gestion_day', month_report=month_report)
+        manipulation_gestion_table(df=df, type=1, name='summary_gestion_month', month_report=month_report)
+        manipulation_gestion_table(df=df, type=2, name='summary_gestion_operation_month', month_report=month_report)
+        manipulation_gestion_table(df=df, type=3, name='summary_acw_weeks', month_report=month_report)
 
 
-def manipulation_gestion_table(df=None, type=None, name=None):  
+def manipulation_gestion_table(df=None, type=None, name=None, month_report=None):  
     
     def custom_count(x, condition):
         return (x == condition).sum()
@@ -44,6 +47,7 @@ def manipulation_gestion_table(df=None, type=None, name=None):
         df_result['tiempo_aht'] =       (df_result['aht']/3600).apply(lambda x: timedelta(hours=x))
         df_result['tiempo_aht'] =       df_result['tiempo_aht'].apply(lambda x: "{:02}:{:02}".format(x.seconds // 3600, (x.seconds % 3600) // 60))
         df_result['tasa_contacto']=     round(df_result['util_positive'] / df_result['count'], 2) * 100
+        df_result['tasa_contacto']=     df_result['tasa_contacto'].round(2)
         
         #Creación de nuevas filas con la suma y resta de todas las columnas numericas para comparar resultados, a columna promedio se aproximo a 2 decimales
         df_result_sum = df_result.sum(numeric_only=True)
@@ -82,6 +86,19 @@ def manipulation_gestion_table(df=None, type=None, name=None):
         df_result['llave']=df_result['COORDINADORA'] + df_result['MES'].astype(str)
         return df_result
         
+    def group_table_asw_week(df=None):
+        
+        df_result = df.groupby(['SEMANA','DIA_SEMANA', 'COORDINADORA','NOMBRE']).agg(
+            count           =       ('ACCOUNT_NUMBER', 'nunique'),
+            util_positive   =       ('TIPO_CONTACTO', lambda x: custom_count(x, 'UTIL POSITIVO')),
+            util_negative   =       ('TIPO_CONTACTO', lambda x: custom_count(x, 'UTIL NEGATIVO')),
+            no_contact      =       ('TIPO_CONTACTO', lambda x: custom_count(x, 'NO CONTACTO')),
+            acw             =       ('ACW', 'sum'),
+            aht             =       ('AHT', 'sum')
+        ).reset_index()
+        
+        
+        return df_result        
         
     if type == 1:
         df_result = group_table_gestor(df=df)
@@ -93,7 +110,7 @@ def manipulation_gestion_table(df=None, type=None, name=None):
   
         save_query(df=df_result, name=name, folder='procesed\gestiones\df_gestiones')
         
-    else:
+    elif type == 2:
         df_result=group_table_operation(df)
         df_result = calculate_aht_acw(df_result)
 
@@ -102,3 +119,21 @@ def manipulation_gestion_table(df=None, type=None, name=None):
         df_result.loc[len(df_result) - 1, ['COORDINADORA', 'MES'] ] = ['Promedio','']
        
         save_query(df=df_result, name=name, folder='procesed\gestiones\df_gestiones')
+        
+    else:
+        
+        df_weeks = df[df['MES'] == month_report]
+        contador = 1
+        for week in range(df_weeks['SEMANA'].min(), df_weeks['SEMANA'].max() + 1):
+        
+            df_weeks_filter=df_weeks[df_weeks['SEMANA'] == week]
+            df_result=group_table_asw_week(df_weeks_filter)  
+            
+            df_result = calculate_aht_acw(df_result)
+            print_test(df_result)
+            df_result=df_result[['acw', 'aht']]
+            df_result.loc[len(df_result) - 2, ['COORDINADORA', 'MES'] ] = ['Suma','']
+            df_result.loc[len(df_result) - 1, ['COORDINADORA', 'MES'] ] = ['Promedio','']  
+            name_file=name + '_' + str(contador)          
+            save_query(df=df_result, name=name_file, folder='procesed\gestiones\df_gestiones')
+            contador += 1
