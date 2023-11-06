@@ -130,10 +130,23 @@ def manipulation_gestion_table(df=None, type=None, name=None, month_report=None)
             df_result=group_table_asw_week(df_weeks_filter)  
             
             df_result = calculate_aht_acw(df_result)
-            print_test(df_result)
+            
             df_result=df_result[['acw', 'aht']]
             df_result.loc[len(df_result) - 2, ['COORDINADORA', 'MES'] ] = ['Suma','']
             df_result.loc[len(df_result) - 1, ['COORDINADORA', 'MES'] ] = ['Promedio','']  
+            days_week = [
+                'lunes',
+                'martes',
+                'miercoles',
+                'jueves',
+                'viernes',
+                'sabado'
+            ]
+            
+            df_result['DIA_SEMANA']=df_result['DIA_SEMANA'].replace({valor_numerico: string for valor_numerico, string in zip(df['Columna1'], days_week)})
+            df_result=pd.pivot_table(df_result, values=['aht', 'acw'], index=['SEMANA', 'DIA_SEMANA', 'COORDINADORA', 'NOMBRE'], columns=['acw', 'ath'], fill_value=0).reset_index()
+            
+            print_test(df_result)
             name_file=name + '_' + str(contador)          
             save_query(df=df_result, name=name_file, folder='procesed\gestiones\df_gestiones')
             contador += 1
