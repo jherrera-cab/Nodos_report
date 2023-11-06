@@ -86,7 +86,7 @@ def manipulation_gestion_table(df=None, type=None, name=None, month_report=None)
         df_result['llave']=df_result['COORDINADORA'] + df_result['MES'].astype(str)
         return df_result
         
-    def group_table_asw_week(df=None):
+    def group_table_acw_week(df=None):
         
         df_result = df.groupby(['SEMANA','DIA_SEMANA', 'COORDINADORA','NOMBRE']).agg(
             count           =       ('ACCOUNT_NUMBER', 'nunique'),
@@ -127,26 +127,30 @@ def manipulation_gestion_table(df=None, type=None, name=None, month_report=None)
         for week in range(df_weeks['SEMANA'].min(), df_weeks['SEMANA'].max() + 1):
         
             df_weeks_filter=df_weeks[df_weeks['SEMANA'] == week]
-            df_result=group_table_asw_week(df_weeks_filter)  
+            df_result=group_table_acw_week(df_weeks_filter)  
             
             df_result = calculate_aht_acw(df_result)
             
-            df_result=df_result[['acw', 'aht']]
+            df_result=df_result[['SEMANA','DIA_SEMANA', 'COORDINADORA','NOMBRE','acw', 'aht']]
             df_result.loc[len(df_result) - 2, ['COORDINADORA', 'MES'] ] = ['Suma','']
             df_result.loc[len(df_result) - 1, ['COORDINADORA', 'MES'] ] = ['Promedio','']  
-            days_week = [
-                'lunes',
-                'martes',
-                'miercoles',
-                'jueves',
-                'viernes',
-                'sabado'
-            ]
-            
-            df_result['DIA_SEMANA']=df_result['DIA_SEMANA'].replace({valor_numerico: string for valor_numerico, string in zip(df['Columna1'], days_week)})
-            df_result=pd.pivot_table(df_result, values=['aht', 'acw'], index=['SEMANA', 'DIA_SEMANA', 'COORDINADORA', 'NOMBRE'], columns=['acw', 'ath'], fill_value=0).reset_index()
-            
-            print_test(df_result)
+            days_week = {
+               0:'lunes',
+               1: 'martes',
+               2: 'miercoles',
+               3: 'jueves',
+               4: 'viernes',
+               5: 'sabado'
+            }
+                       
+            df_result['DIA_SEMANA'] = df_result['DIA_SEMANA'].map(days_week)
+            df_result=df_result.iloc[:-2]
+
+       
+            df_result['llave'] = df_result['NOMBRE'] + "_" + df_result['DIA_SEMANA']
+            df_result = df_result.pivot(index='NOMBRE', columns=['DIA_SEMANA'], values=['acw', 'aht'])
+            new_columns = [f'{level1}-{level2}' for level1, level2 in df_result.columns]
+            df_result.columns = new_columns
             name_file=name + '_' + str(contador)          
             save_query(df=df_result, name=name_file, folder='procesed\gestiones\df_gestiones')
             contador += 1

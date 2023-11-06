@@ -47,7 +47,7 @@ else:
     print('Se realizo la carga desde el back de los DataFrame')
     print('---------------------------------------------------\n')
     
-
+manipulation_gestion(df=dic_dfs[f'df_gestion_month-{entidad}'], tipe_report=tipe_report[0], month_report=month_report, day_report=date_variables['day_report'])
 #merge_df_summary()
 #calculate_aux(df_master_aux=dic_dfs[f'df_master_aux-{entidad}'], entidad = entidad, month_report=month_report, day_report=date_variables['day_report'])
 #df_kpi_report = calculate_goal(entidad=entidad, date_variables=date_variables)
@@ -63,5 +63,5 @@ for i in dfs_report[1]:
     else:
         dic_lists[f'acw_week_{cont}']=None
     cont += 1
-print_test(dic_lists['acw_week_1'])
+
 #render_report(date_variables, entidad, df_kpi_report, dic_lists)
