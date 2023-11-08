@@ -2,6 +2,9 @@ from print_test import print_test
 import pandas as pd
 from data.procesed.save_df_query import save_query
 from datetime import timedelta
+import os
+from pathlib import Path
+from reports.convert_list.convert import df_to_list
 
 def manipulation_gestion(df=None, tipe_report=None, month_report=None, day_report=None):
 
@@ -19,9 +22,25 @@ def manipulation_gestion(df=None, tipe_report=None, month_report=None, day_repor
         manipulation_gestion_table(df=df, type=1, name='summary_gestion_month', month_report=month_report)
         manipulation_gestion_table(df=df, type=2, name='summary_gestion_operation_month', month_report=month_report)
         manipulation_gestion_table(df=df, type=3, name='summary_acw_weeks', month_report=month_report)
+    
+def read_df_gestion():
+    
+    df_acw_week={}   
+    files=os.listdir(r'Z:\1. Coordinadores\2. Jonathan Herrera\Scripts\NodosLab\Nodos_Lab_Report\data\procesed\gestiones\df_gestiones') 
+    raiz=Path(__file__).resolve().parents[0]
 
+    for file in files:
+        name_file=os.path.join(raiz, 'df_gestiones', file)
+
+        if 'summary_acw_weeks_' in file:
+            df_acw_week[file] = df_to_list(pd.read_csv(name_file))  
+           
+
+    return df_acw_week
 
 def manipulation_gestion_table(df=None, type=None, name=None, month_report=None):  
+    
+        
     
     def custom_count(x, condition):
         return (x == condition).sum()
@@ -99,6 +118,8 @@ def manipulation_gestion_table(df=None, type=None, name=None, month_report=None)
         
         
         return df_result        
+    
+    folder='procesed\gestiones\df_gestiones'
         
     if type == 1:
         df_result = group_table_gestor(df=df)
@@ -108,7 +129,7 @@ def manipulation_gestion_table(df=None, type=None, name=None, month_report=None)
         df_result.loc[len(df_result) - 2, ['NOMBRE','COORDINADORA', 'llave', 'MES'] ] = ['Suma','-', 'Suma10','']
         df_result.loc[len(df_result) - 1, ['NOMBRE','COORDINADORA', 'llave', 'MES'] ] = ['Promedio','-', 'Promedio10','']
   
-        save_query(df=df_result, name=name, folder='procesed\gestiones\df_gestiones')
+        save_query(df=df_result, name=name, folder=folder)
         
     elif type == 2:
         df_result=group_table_operation(df)
@@ -118,7 +139,7 @@ def manipulation_gestion_table(df=None, type=None, name=None, month_report=None)
         df_result.loc[len(df_result) - 2, ['COORDINADORA', 'MES'] ] = ['Suma','']
         df_result.loc[len(df_result) - 1, ['COORDINADORA', 'MES'] ] = ['Promedio','']
        
-        save_query(df=df_result, name=name, folder='procesed\gestiones\df_gestiones')
+        save_query(df=df_result, name=name, folder=folder)
         
     else:
         
@@ -131,7 +152,7 @@ def manipulation_gestion_table(df=None, type=None, name=None, month_report=None)
             
             df_result = calculate_aht_acw(df_result)
             
-            df_result=df_result[['SEMANA','DIA_SEMANA', 'COORDINADORA','NOMBRE','acw', 'aht']]
+            #df_result=df_result[['SEMANA','DIA_SEMANA', 'COORDINADORA','NOMBRE','tiempo_acw', 'tiempo_aht']]
             df_result.loc[len(df_result) - 2, ['COORDINADORA', 'MES'] ] = ['Suma','']
             df_result.loc[len(df_result) - 1, ['COORDINADORA', 'MES'] ] = ['Promedio','']  
             days_week = {
@@ -146,11 +167,32 @@ def manipulation_gestion_table(df=None, type=None, name=None, month_report=None)
             df_result['DIA_SEMANA'] = df_result['DIA_SEMANA'].map(days_week)
             df_result=df_result.iloc[:-2]
 
-       
             df_result['llave'] = df_result['NOMBRE'] + "_" + df_result['DIA_SEMANA']
-            df_result = df_result.pivot(index='NOMBRE', columns=['DIA_SEMANA'], values=['acw', 'aht'])
-            new_columns = [f'{level1}-{level2}' for level1, level2 in df_result.columns]
-            df_result.columns = new_columns
+            df_result = df_result.pivot(index=['COORDINADORA', 'NOMBRE'], columns=['DIA_SEMANA'], values=['tiempo_acw', 'acw' , 'tiempo_aht', 'aht'])
+            print_test(df_result)
+            columns=df_result.columns
+            new_columns=[]
+            for column in columns:
+                new_column = '_'.join(column).replace('-','_')
+                new_columns.append(new_column)
+            
+            df_result.columns=new_columns
+            df_result.reset_index(inplace=True)
+
+            df_result.fillna(0, inplace=True)
+            columns_sum=['acw_jueves', 'acw_lunes', 'acw_martes', 'acw_miercoles', 'acw_sabado', 'acw_viernes']
+            df_result['total_acw']= 0
+            
+            for column in columns_sum:
+                if column in df_result.columns:
+                    df_result['total_acw'] += df_result[column]
+            df_result['tiempo_total_acw'] =       (df_result['total_acw']/3600).apply(lambda x: timedelta(hours=x))
+            df_result['tiempo_total_acw'] =       df_result['tiempo_total_acw'].apply(lambda x: "{:02}:{:02}".format(x.seconds // 3600, (x.seconds % 3600) // 60))
+      
             name_file=name + '_' + str(contador)          
-            save_query(df=df_result, name=name_file, folder='procesed\gestiones\df_gestiones')
+            save_query(df=df_result, name=name_file, folder=folder)
             contador += 1
+            
+
+
+        

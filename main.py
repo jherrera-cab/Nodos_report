@@ -6,6 +6,7 @@ from data.procesed.save_df_query import check_creation_dates_in_folder
 # `manipulation_gestion` function from the `gestiones` module in the `data.procesed.gestiones`
 # package. This allows the `manipulation_gestion` function to be used in the current script.
 from data.procesed.gestiones.gestiones import manipulation_gestion
+from data.procesed.gestiones.gestiones import read_df_gestion
 from data.procesed.promises.promises import manipulation_promises
 from data.procesed.read_df_back import read_df_back
 from data.procesed.merge.merge import merge_df_summary
@@ -21,7 +22,7 @@ from pathlib import Path
                                                          
 entidades   =       ['NATURA2', 'MIBANCO', 'BANCOSANTANDER', 'NATURGY']
 tipe_report =       ['diario','mensual']
-entidad     =       entidades[1]
+entidad     =       entidades[0]
 month_report=       10
 date_variables      =   var_date(tipe_report[0], month_report=month_report, entidad=entidad)
 
@@ -47,21 +48,15 @@ else:
     print('Se realizo la carga desde el back de los DataFrame')
     print('---------------------------------------------------\n')
     
-manipulation_gestion(df=dic_dfs[f'df_gestion_month-{entidad}'], tipe_report=tipe_report[0], month_report=month_report, day_report=date_variables['day_report'])
+
 #merge_df_summary()
 #calculate_aux(df_master_aux=dic_dfs[f'df_master_aux-{entidad}'], entidad = entidad, month_report=month_report, day_report=date_variables['day_report'])
-#df_kpi_report = calculate_goal(entidad=entidad, date_variables=date_variables)
+df_kpi_report = calculate_goal(entidad=entidad, date_variables=date_variables)
 #var_list    =df_to_list(df_kpi_report)
 #calculate_acw(df_gestiones=dic_dfs[f'df_gestion_month-{entidad}'], day_report=date_variables['day_report'])
 dfs_report = read_dfs()
+list_df_gestion = read_df_gestion()
 # conversión dfs a lista de acw por semana
-cont = 1
-dic_lists={}
-for i in dfs_report[1]:
-    if len(dfs_report[1]) >= cont:
-        dic_lists[f'acw_week_{cont}']= df_to_list(dfs_report[1][f'summary_acw_weeks_{cont}'])
-    else:
-        dic_lists[f'acw_week_{cont}']=None
-    cont += 1
 
-#render_report(date_variables, entidad, df_kpi_report, dic_lists)
+
+render_report(date_variables, entidad, df_kpi_report, list_df_gestion)

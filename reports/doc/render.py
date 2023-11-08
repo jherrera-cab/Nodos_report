@@ -7,11 +7,21 @@ from print_test import print_test
 def render_report(date_variables=None, 
                   entidad=None,
                   var_list=None,
-                  dic_lists=None
+                  list_df_gestion=None
                   ):
     
     docx_tpl        =   DocxTemplate(date_variables['path_doc_input'])
 
+    if len(list_df_gestion['summary_acw_weeks_1.csv'] )   == 0:
+        summary_acw_weeks_1 =None
+    elif len(list_df_gestion['summary_acw_weeks_2.csv'] ) == 0:
+        summary_acw_weeks_2 =None
+    elif len(list_df_gestion['summary_acw_weeks_3.csv'] ) == 0:
+        summary_acw_weeks_3 =None            
+    elif len(list_df_gestion['summary_acw_weeks_4.csv'] ) == 0:
+        summary_acw_weeks_4 =None
+    elif len(list_df_gestion['summary_acw_weeks_5.csv'] ) == 0:
+        summary_acw_weeks_5 =None
     
     context={
         'CARTERA'                       :   entidad,
@@ -32,10 +42,11 @@ def render_report(date_variables=None,
         'Meta_promesas_hora'            :   var_list['Meta_promesas_hora'][0],
         'Total_horas'                   :   var_list['Total_horas'][0],
         #fin resumen
-        'table_acw_week_0'              :   dic_lists['acw_week_1'],
-        'table_acw_week_1'              :   dic_lists['acw_week_2'],
-        'table_acw_week_2'              :   dic_lists['acw_week_3'],
-        'table_acw_week_3'              :   dic_lists['acw_week_4'],
+        'table_acw_week_0'              :   summary_acw_weeks_1,
+        'table_acw_week_1'              :   summary_acw_weeks_2,
+        'table_acw_week_2'              :   summary_acw_weeks_3,
+        'table_acw_week_3'              :   summary_acw_weeks_4,
+        'table_acw_week_4'              :   summary_acw_weeks_5,
         #'table_month'                   :   df_month_goal,
         #'table_day'                     :   df_merge_day,
         #Comparativa detalle historico por asesor

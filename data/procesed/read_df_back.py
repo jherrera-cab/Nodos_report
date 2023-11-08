@@ -21,11 +21,11 @@ def read_df_back():
     folder_path = os.path.join(raiz,'procesed\df')
 
     file_paths = list_files_in_folder(folder_path)
-
+    
     dic_df={}
     for file in file_paths:
         name_file=os.path.splitext(os.path.basename(file))
         df = pd.read_csv(file)
         dic_df[name_file[0]]=df
-        
+
     return(dic_df)

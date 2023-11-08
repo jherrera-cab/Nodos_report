@@ -4,6 +4,7 @@ from print_test import print_test
 
 
 
+
 def calculate_df_aux(df_aux_result=None, type='day', entidad=None):
     
     df_aux_result['hours_logueo']=round(df_aux_result['time']/60, 2)  
