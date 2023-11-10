@@ -75,7 +75,6 @@ def check_creation_dates_in_folder(path_df_query,
             file=os.path.join(path_df_query, df)
             os.remove(file)
             
-
         
             
     # Comprueba si todas las fechas de creación son iguales

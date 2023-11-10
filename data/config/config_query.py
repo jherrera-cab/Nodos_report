@@ -42,7 +42,7 @@ def var_date(tipe_report=None, month_report=None, entidad=None):
         day_report      =   day_report.strftime('%Y-%m-%d')
         time_day        =   4
     else:
-        day_report      =   day_report      -   timedelta(days=4)#1
+        day_report      =   day_report      -   timedelta(days=1)#1
         day_report      =   day_report.strftime('%Y-%m-%d')
         time_day        =   9
         

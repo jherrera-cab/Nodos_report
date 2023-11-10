@@ -2,11 +2,7 @@ from data.conect.conect_db import connectSQL
 from data.download.query_db import read_SQL
 from data.config.config_query import var_date
 from data.procesed.save_df_query import check_creation_dates_in_folder
-# The line `from data.procesed.gestiones.gestiones import manipulation_gestion` is importing the
-# `manipulation_gestion` function from the `gestiones` module in the `data.procesed.gestiones`
-# package. This allows the `manipulation_gestion` function to be used in the current script.
 from data.procesed.gestiones.gestiones import manipulation_gestion
-from data.procesed.gestiones.gestiones import read_df_gestion
 from data.procesed.promises.promises import manipulation_promises
 from data.procesed.read_df_back import read_df_back
 from data.procesed.merge.merge import merge_df_summary
@@ -22,8 +18,8 @@ from pathlib import Path
                                                          
 entidades   =       ['NATURA2', 'MIBANCO', 'BANCOSANTANDER', 'NATURGY']
 tipe_report =       ['diario','mensual']
-entidad     =       entidades[0]
-month_report=       10
+entidad     =       entidades[1]
+month_report=       11
 date_variables      =   var_date(tipe_report[0], month_report=month_report, entidad=entidad)
 
 result, faltantes      =       check_creation_dates_in_folder(date_variables['path_df_query'], 
@@ -48,15 +44,28 @@ else:
     print('Se realizo la carga desde el back de los DataFrame')
     print('---------------------------------------------------\n')
     
-
-#merge_df_summary()
-#calculate_aux(df_master_aux=dic_dfs[f'df_master_aux-{entidad}'], entidad = entidad, month_report=month_report, day_report=date_variables['day_report'])
+manipulation_gestion(df=dic_dfs[f'df_gestion_month-{entidad}'], tipe_report=tipe_report[0], month_report=month_report, day_report=date_variables['day_report'])
+merge_df_summary()
+calculate_aux(df_master_aux=dic_dfs[f'df_master_aux-{entidad}'], entidad = entidad, month_report=month_report, day_report=date_variables['day_report'])
 df_kpi_report = calculate_goal(entidad=entidad, date_variables=date_variables)
-#var_list    =df_to_list(df_kpi_report)
-#calculate_acw(df_gestiones=dic_dfs[f'df_gestion_month-{entidad}'], day_report=date_variables['day_report'])
-dfs_report = read_dfs()
-list_df_gestion = read_df_gestion()
-# conversión dfs a lista de acw por semana
+calculate_acw(df_gestiones=dic_dfs[f'df_gestion_month-{entidad}'], day_report=date_variables['day_report'])
+
+#dict_keys(['gestiones_week', 'gestiones_summary', 'goals_week', 'goals_summary', 'aux_week', 'aux_summary'])
+#dict_keys(['summary_acw_weeks_1', 'summary_acw_weeks_2'])
+
+dic_result=read_dfs()
+
+list_gestiones=dic_result['gestiones_week']
+
+files = ['summary_acw_weeks_1', 'summary_acw_weeks_2', 'summary_acw_weeks_3', 'summary_acw_weeks_4', 'summary_acw_weeks_5']
+
+summarys_acw={}
+
+for file in files:
+    if file in list_gestiones:
+        summarys_acw[file] = list_gestiones[file]
+    else:
+        summarys_acw[file] = []
 
 
-render_report(date_variables, entidad, df_kpi_report, list_df_gestion)
+render_report(date_variables, entidad, df_kpi_report, summarys_acw, dic_result['goals_summary'])

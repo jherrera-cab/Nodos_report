@@ -106,7 +106,7 @@ def read_SQL(cartera=None, date_variables=None, month_report=None, faltantes=Non
                     concat(B.NOMBRE, MONTH(A.HISTORY_DATE)) AS llave
                 FROM		[dbo].[Gestiones] AS A
                 INNER JOIN	[dbo].[Nomina]	  AS B ON A.GESTOR_ID = B.[Usuario Sinfin 1]
-                INNER JOIN	[dbo].[Tipo_Contacto] AS C ON A.ID_EFECTO = C.EFECTO
+                INNER JOIN	[dbo].[Tipo_Contacto] AS C ON concat(A.entidad_id,'-' ,A.ID_EFECTO) = C.llave_efecto
                 WHERE		CAST(HISTORY_DATE AS DATE) BETWEEN :date_start AND :date_end and B.ESTADO_CONTRATO = 'ACTIVO' AND B.CARGO='GESTOR' AND ENTIDAD_ID= :entidad
                 ORDER BY	HISTORY_DATE DESC
                         """

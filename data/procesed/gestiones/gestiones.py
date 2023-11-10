@@ -10,7 +10,7 @@ def manipulation_gestion(df=None, tipe_report=None, month_report=None, day_repor
 
     df['FECHA']     =   pd.to_datetime(df['FECHA'], errors='coerce')
     df=df.sort_values(by= 'FECHA', ascending=False)
-    
+
     gestion_day     =   df[df['FECHA'] == day_report]
 
     if len(gestion_day) <=1:
@@ -23,20 +23,7 @@ def manipulation_gestion(df=None, tipe_report=None, month_report=None, day_repor
         manipulation_gestion_table(df=df, type=2, name='summary_gestion_operation_month', month_report=month_report)
         manipulation_gestion_table(df=df, type=3, name='summary_acw_weeks', month_report=month_report)
     
-def read_df_gestion():
-    
-    df_acw_week={}   
-    files=os.listdir(r'Z:\1. Coordinadores\2. Jonathan Herrera\Scripts\NodosLab\Nodos_Lab_Report\data\procesed\gestiones\df_gestiones') 
-    raiz=Path(__file__).resolve().parents[0]
 
-    for file in files:
-        name_file=os.path.join(raiz, 'df_gestiones', file)
-
-        if 'summary_acw_weeks_' in file:
-            df_acw_week[file] = df_to_list(pd.read_csv(name_file))  
-           
-
-    return df_acw_week
 
 def manipulation_gestion_table(df=None, type=None, name=None, month_report=None):  
     
@@ -144,6 +131,7 @@ def manipulation_gestion_table(df=None, type=None, name=None, month_report=None)
     else:
         
         df_weeks = df[df['MES'] == month_report]
+        
         contador = 1
         for week in range(df_weeks['SEMANA'].min(), df_weeks['SEMANA'].max() + 1):
         
@@ -169,7 +157,7 @@ def manipulation_gestion_table(df=None, type=None, name=None, month_report=None)
 
             df_result['llave'] = df_result['NOMBRE'] + "_" + df_result['DIA_SEMANA']
             df_result = df_result.pivot(index=['COORDINADORA', 'NOMBRE'], columns=['DIA_SEMANA'], values=['tiempo_acw', 'acw' , 'tiempo_aht', 'aht'])
-            print_test(df_result)
+
             columns=df_result.columns
             new_columns=[]
             for column in columns:

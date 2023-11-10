@@ -7,23 +7,17 @@ from print_test import print_test
 def render_report(date_variables=None, 
                   entidad=None,
                   var_list=None,
-                  list_df_gestion=None
+                  summarys_acw=None,
+                  list_df_goals=None
                   ):
     
     docx_tpl        =   DocxTemplate(date_variables['path_doc_input'])
 
-    if len(list_df_gestion['summary_acw_weeks_1.csv'] )   == 0:
-        summary_acw_weeks_1 =None
-    elif len(list_df_gestion['summary_acw_weeks_2.csv'] ) == 0:
-        summary_acw_weeks_2 =None
-    elif len(list_df_gestion['summary_acw_weeks_3.csv'] ) == 0:
-        summary_acw_weeks_3 =None            
-    elif len(list_df_gestion['summary_acw_weeks_4.csv'] ) == 0:
-        summary_acw_weeks_4 =None
-    elif len(list_df_gestion['summary_acw_weeks_5.csv'] ) == 0:
-        summary_acw_weeks_5 =None
+
+
     
     context={
+        'day_report'                    :   date_variables['day_report'],
         'CARTERA'                       :   entidad,
         'FECHA_ACTUALIZACION'           :   date_variables['to_day'],
         'Coordinador'                   :   var_list['coordinador'],
@@ -42,17 +36,17 @@ def render_report(date_variables=None,
         'Meta_promesas_hora'            :   var_list['Meta_promesas_hora'][0],
         'Total_horas'                   :   var_list['Total_horas'][0],
         #fin resumen
-        'table_acw_week_0'              :   summary_acw_weeks_1,
-        'table_acw_week_1'              :   summary_acw_weeks_2,
-        'table_acw_week_2'              :   summary_acw_weeks_3,
-        'table_acw_week_3'              :   summary_acw_weeks_4,
-        'table_acw_week_4'              :   summary_acw_weeks_5,
-        #'table_month'                   :   df_month_goal,
-        #'table_day'                     :   df_merge_day,
+        'table_acw_week_0'              :   summarys_acw['summary_acw_weeks_1'],
+        'table_acw_week_1'              :   summarys_acw['summary_acw_weeks_2'],
+        'table_acw_week_2'              :   summarys_acw['summary_acw_weeks_3'],
+        'table_acw_week_3'              :   summarys_acw['summary_acw_weeks_4'],
+        'table_acw_week_4'              :   summarys_acw['summary_acw_weeks_5'],
+        #'table_month'                   :   ,
+        'table_day'                     :   list_df_goals['df_merge_aux_result_day'],
         #Comparativa detalle historico por asesor
-        #'table_history'                 :   df_merge_month,
+        'table_history'                 :   list_df_goals['df_merge_aux_result_month'],
         #Comparativa operacion historica
-        #'table_history_operation'       :   df_summary_operation,
+        'table_history_operation'       :   list_df_goals['df_merge_aux_result_month_operation'],
         #Graficas
         #'grafic_radar_contact_operation':   grafic_contact_operation,
         #'grafic_distribution_contact_agent_positive':grafic_distribution_contact_agent_positive,

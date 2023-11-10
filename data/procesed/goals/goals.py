@@ -1,8 +1,15 @@
 import pandas as pd
 from print_test import print_test
 from data.procesed.save_df_query import save_query
+import os
+from pathlib import Path
+from reports.convert_list.convert import df_to_list
+
+
 
 def calculate_goal(entidad=None, date_variables=None):
+
+        
     def color_percentil(kpi):
         color={
             'top':'#a7c957',
@@ -38,7 +45,9 @@ def calculate_goal(entidad=None, date_variables=None):
         return df_result_suma
 
             
-    def calculate_goal_df(df_aux=None, df_goal=None, df_result = None):
+    def calculate_goal_df(df_aux=None, df_goal=None, df_result = None, type=None):
+        
+        
         num_day=date_variables['num_day_week']
         hour_expected = 4 if num_day == 0 else 9
            
@@ -58,7 +67,10 @@ def calculate_goal(entidad=None, date_variables=None):
         df_aux['expected_promises']=hour_expected *df_goal.at[0, 'meta_promesas']   
         df_aux['objetive_promises']=df_aux['objetive_promises'].round(2)
         
-        df_merge_aux_result= pd.merge(df_aux_day,df_result, on='NOMBRE', how='left')
+        if type==1:
+            df_merge_aux_result= pd.merge(df_aux_day,df_result, on='NOMBRE', how='left')
+        else:
+            df_merge_aux_result= pd.merge(df_aux_day,df_result, on='COORDINADORA', how='left')
         
         df_merge_aux_result['compliance_gestion'] = df_merge_aux_result['count'] / df_merge_aux_result['objetive_gestion'] *100
         df_merge_aux_result['compliance_contact'] = df_merge_aux_result['util_positive'] / df_merge_aux_result['objetive_contact'] *100
@@ -92,11 +104,15 @@ def calculate_goal(entidad=None, date_variables=None):
     df_aux_day=pd.read_csv(r'Z:\1. Coordinadores\2. Jonathan Herrera\Scripts\NodosLab\Nodos_Lab_Report\data\procesed\master_aux\master_aux_df\df_aux_result_month.csv')
     df_result_day=pd.read_csv(r'Z:\1. Coordinadores\2. Jonathan Herrera\Scripts\NodosLab\Nodos_Lab_Report\data\procesed\merge\merge_df\df_merge_day.csv')
     df_result_month=pd.read_csv(r'Z:\1. Coordinadores\2. Jonathan Herrera\Scripts\NodosLab\Nodos_Lab_Report\data\procesed\merge\merge_df\df_merge_month.csv')
+    df_result_month_operation=pd.read_csv(r'Z:\1. Coordinadores\2. Jonathan Herrera\Scripts\NodosLab\Nodos_Lab_Report\data\procesed\merge\merge_df\df_merge_month_operation.csv')
 
-    df_merge_aux_result_day=calculate_goal_df(df_aux=df_aux_day, df_goal= df_goal, df_result = df_result_day)
-    df_merge_aux_result_month= calculate_goal_df(df_aux=df_aux_day, df_goal= df_goal, df_result = df_result_month)
+    df_merge_aux_result_day=calculate_goal_df(df_aux=df_aux_day, df_goal= df_goal, df_result = df_result_day, type=1)
+    df_merge_aux_result_month= calculate_goal_df(df_aux=df_aux_day, df_goal= df_goal, df_result = df_result_month, type=1)
+    df_merge_aux_result_month_operation= calculate_goal_df(df_aux=df_aux_day, df_goal= df_goal, df_result = df_result_month_operation, type=2)
     df_result_day=row_total_mean(df_merge_aux_result_day)
     df_result_month=row_total_mean(df_merge_aux_result_month)
+    df_result_month_operation=row_total_mean(df_result_month_operation)
+    
 
     data={
         'coordinador'         : df_goal['coordinador_nacional'],
@@ -117,6 +133,7 @@ def calculate_goal(entidad=None, date_variables=None):
     save_query(df=df_kpi_report, name='df_kpi_report', folder=folder)
     save_query(df=df_result_day, name='df_merge_aux_result_day', folder=folder)
     save_query(df=df_result_month, name='df_merge_aux_result_month', folder=folder)
+    save_query(df=df_result_month_operation, name='df_merge_aux_result_month_operation', folder=folder)
     
     return df_kpi_report
 
