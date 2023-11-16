@@ -65,6 +65,10 @@ def read_SQL(cartera=None, date_variables=None, month_report=None, faltantes=Non
     
     #df_gestion_month           
     def read_db_1(cartera):
+        if cartera == 'NATURA2':
+            entidad_sfects = 'NATURA'
+        else:
+            entidad_sfects = cartera
         
         date_start_formated, date_end_formated = date_variables['date_init_month_n3'].strftime("%Y-%m-%d"), date_end.strftime("%Y-%m-%d")
         query = db.text(
@@ -107,17 +111,22 @@ def read_SQL(cartera=None, date_variables=None, month_report=None, faltantes=Non
                 FROM		[dbo].[Gestiones] AS A
                 INNER JOIN	[dbo].[Nomina]	  AS B ON A.GESTOR_ID = B.[Usuario Sinfin 1]
                 INNER JOIN	[dbo].[Tipo_Contacto] AS C ON concat(A.entidad_id,'-' ,A.ID_EFECTO) = C.llave_efecto
-                WHERE		CAST(HISTORY_DATE AS DATE) BETWEEN :date_start AND :date_end and B.ESTADO_CONTRATO = 'ACTIVO' AND B.CARGO='GESTOR' AND ENTIDAD_ID= :entidad
+                WHERE		CAST(HISTORY_DATE AS DATE) BETWEEN :date_start AND :date_end and 
+                            B.ESTADO_CONTRATO = 'ACTIVO' AND 
+                            B.CARGO    =    'GESTOR' AND 
+                            ENTIDAD_ID = :entidad OR ENTIDAD_ID = :entidad_sfects
                 ORDER BY	HISTORY_DATE DESC
                         """
         )
-        query = query.bindparams(date_start=date_start_formated, date_end=date_end_formated, entidad=cartera)
+
+        query = query.bindparams(date_start=date_start_formated, date_end=date_end_formated, entidad=cartera, entidad_sfects=entidad_sfects)
         result = connection.execute(query)
         df_gestion_month = pd.DataFrame(result)
         save_query(df=df_gestion_month, name=f'df_gestion_month-{cartera}', folder=folder)
     
     #df_promises    
     def read_db_2(cartera):
+
 # region LECTURA PROMESAS MES EN CURSO 
         date_start_formated, date_end_formated = date_variables['date_init_month_n3'].strftime("%Y-%m-%d"), date_end.strftime("%Y-%m-%d")
         query_promises = db.text(
@@ -216,7 +225,7 @@ def read_SQL(cartera=None, date_variables=None, month_report=None, faltantes=Non
                     SUM(TIEMPO) / 60000 AS TIME
             FROM	Maestro_aux as a
             inner join [dbo].[Nomina] as b on A.gestor_id = b.[Usuario Sinfin 1]
-            WHERE	ENTIDAD_ID= :entidad AND TIEMPO IS NOT NULL AND MONTH(FECHA)= :month_filter
+            WHERE	ENTIDAD_ID = :entidad AND TIEMPO IS NOT NULL AND MONTH(FECHA)= :month_filter
             GROUP BY ESTADOANTERIOR, FECHA, nombre, COORDINADORA
             ORDER BY  FECHA ASC, nombre DESC
             """
@@ -226,8 +235,6 @@ def read_SQL(cartera=None, date_variables=None, month_report=None, faltantes=Non
         result =connection.execute(query_aux_logueo)
         df_master_aux=pd.DataFrame(result)
         save_query(df=df_master_aux, name=f'df_master_aux-{cartera}', folder=folder)
-        
-  
         # endregion
     
     

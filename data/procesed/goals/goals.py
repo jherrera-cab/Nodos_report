@@ -7,7 +7,7 @@ from reports.convert_list.convert import df_to_list
 
 
 
-def calculate_goal(entidad=None, date_variables=None):
+def calculate_goal(entidad=None, date_variables=None, month_report = None):
 
         
     def color_percentil(kpi):
@@ -41,6 +41,9 @@ def calculate_goal(entidad=None, date_variables=None):
         df_suma_promedio = pd.DataFrame([suma_row, mean_row], index=['Suma', 'Promedio'])
 
         df_result_suma=pd.concat([df_result_suma, df_suma_promedio])
+        
+        df_result_suma.iat[len(df_result_suma) - 2, 1] = 'Suma'
+        df_result_suma.iat[len(df_result_suma) - 1, 1] = 'Promedio'
         
         return df_result_suma
 
@@ -99,6 +102,11 @@ def calculate_goal(entidad=None, date_variables=None):
         
         return df_merge_aux_result
     
+    def replace_values_null(df=None):
+        df.fillna('-', inplace=True)
+        return df
+        
+    
     df_goal=pd.read_csv(rf'Z:\1. Coordinadores\2. Jonathan Herrera\Scripts\NodosLab\Nodos_Lab_Report\data\procesed\df\df_goals-{entidad}.csv')
     df_aux_day=pd.read_csv(r'Z:\1. Coordinadores\2. Jonathan Herrera\Scripts\NodosLab\Nodos_Lab_Report\data\procesed\master_aux\master_aux_df\df_aux_result_day.csv')
     df_aux_day=pd.read_csv(r'Z:\1. Coordinadores\2. Jonathan Herrera\Scripts\NodosLab\Nodos_Lab_Report\data\procesed\master_aux\master_aux_df\df_aux_result_month.csv')
@@ -108,10 +116,17 @@ def calculate_goal(entidad=None, date_variables=None):
 
     df_merge_aux_result_day=calculate_goal_df(df_aux=df_aux_day, df_goal= df_goal, df_result = df_result_day, type=1)
     df_merge_aux_result_month= calculate_goal_df(df_aux=df_aux_day, df_goal= df_goal, df_result = df_result_month, type=1)
-    df_merge_aux_result_month_operation= calculate_goal_df(df_aux=df_aux_day, df_goal= df_goal, df_result = df_result_month_operation, type=2)
+    
+    df_merge_aux_result_month_operation= df_merge_aux_result_month[df_merge_aux_result_month['MES'] == month_report]
+    
     df_result_day=row_total_mean(df_merge_aux_result_day)
+    df_result_day = replace_values_null(df_result_day)
     df_result_month=row_total_mean(df_merge_aux_result_month)
+    df_result_month = replace_values_null(df_result_month)
     df_result_month_operation=row_total_mean(df_result_month_operation)
+    df_result_month_operation = replace_values_null(df_result_month_operation)
+    df_result_month_operation_play=row_total_mean(df_merge_aux_result_month_operation)
+    df_result_month_operation_play = replace_values_null(df_result_month_operation_play)
     
 
     data={
@@ -129,11 +144,13 @@ def calculate_goal(entidad=None, date_variables=None):
     }
          
     df_kpi_report=pd.DataFrame(data)
+    
     folder=r'procesed\goals\goals_df'
     save_query(df=df_kpi_report, name='df_kpi_report', folder=folder)
     save_query(df=df_result_day, name='df_merge_aux_result_day', folder=folder)
     save_query(df=df_result_month, name='df_merge_aux_result_month', folder=folder)
     save_query(df=df_result_month_operation, name='df_merge_aux_result_month_operation', folder=folder)
+    save_query(df=df_result_month_operation_play, name='df_result_month_operation_play', folder=folder)
     
     return df_kpi_report
 

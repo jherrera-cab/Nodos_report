@@ -25,6 +25,7 @@ def read_df_back():
     dic_df={}
     for file in file_paths:
         name_file=os.path.splitext(os.path.basename(file))
+
         df = pd.read_csv(file)
         dic_df[name_file[0]]=df
 

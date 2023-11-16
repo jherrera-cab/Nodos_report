@@ -5,7 +5,7 @@ from print_test import print_test
 from data.procesed.save_df_query import save_query
 
 
-def merge_df_summary():
+def merge_df_summary(month_report=None):
     
     def read_df_summary(folder=None):
         raiz=Path(__file__).resolve().parents[1]
@@ -20,6 +20,7 @@ def merge_df_summary():
         return df_summary
     
     def merge_summary_df(dfs_gestion=None, dfs_promises=None):
+   
         keys_to_merge=['count_promises', 'ticket','ticket_medio', 'llave']
         
         df_merge_day=pd.merge(dfs_gestion['summary_gestion_day.csv'], 
@@ -35,6 +36,9 @@ def merge_df_summary():
                                           dfs_promises['summary_promises_operation_month.csv'][keys_to_merge], 
                                           on= 'llave', 
                                           how='left')
+        
+        
+        
         
         dfs_merge={
             'df_merge_day' : df_merge_day,
@@ -52,7 +56,7 @@ def merge_df_summary():
     folder_promises= r'promises\df_promises'
     dfs_gestion_summary=read_df_summary(folder_gestion)
     dfs_promises_summary=read_df_summary(folder_promises)
-
+    
     
     dfs_merge=merge_summary_df(dfs_gestion=dfs_gestion_summary, dfs_promises=dfs_promises_summary)
     

@@ -45,9 +45,9 @@ else:
     print('---------------------------------------------------\n')
     
 manipulation_gestion(df=dic_dfs[f'df_gestion_month-{entidad}'], tipe_report=tipe_report[0], month_report=month_report, day_report=date_variables['day_report'])
-merge_df_summary()
+merge_df_summary(month_report=month_report)
 calculate_aux(df_master_aux=dic_dfs[f'df_master_aux-{entidad}'], entidad = entidad, month_report=month_report, day_report=date_variables['day_report'])
-df_kpi_report = calculate_goal(entidad=entidad, date_variables=date_variables)
+df_kpi_report = calculate_goal(entidad=entidad, date_variables=date_variables, month_report=month_report)
 calculate_acw(df_gestiones=dic_dfs[f'df_gestion_month-{entidad}'], day_report=date_variables['day_report'])
 
 #dict_keys(['gestiones_week', 'gestiones_summary', 'goals_week', 'goals_summary', 'aux_week', 'aux_summary'])
@@ -68,4 +68,4 @@ for file in files:
         summarys_acw[file] = []
 
 
-render_report(date_variables, entidad, df_kpi_report, summarys_acw, dic_result['goals_summary'])
+render_report(date_variables, entidad, df_kpi_report, summarys_acw, dic_result['goals_summary'], )

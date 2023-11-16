@@ -41,7 +41,7 @@ def render_report(date_variables=None,
         'table_acw_week_2'              :   summarys_acw['summary_acw_weeks_3'],
         'table_acw_week_3'              :   summarys_acw['summary_acw_weeks_4'],
         'table_acw_week_4'              :   summarys_acw['summary_acw_weeks_5'],
-        #'table_month'                   :   ,
+        'table_month'                   :   list_df_goals['df_result_month_operation_play'],
         'table_day'                     :   list_df_goals['df_merge_aux_result_day'],
         #Comparativa detalle historico por asesor
         'table_history'                 :   list_df_goals['df_merge_aux_result_month'],

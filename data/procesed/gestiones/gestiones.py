@@ -7,12 +7,13 @@ from pathlib import Path
 from reports.convert_list.convert import df_to_list
 
 def manipulation_gestion(df=None, tipe_report=None, month_report=None, day_report=None):
-
+    
+    df=df.sort_values(by='FECHA', ascending=False)
     df['FECHA']     =   pd.to_datetime(df['FECHA'], errors='coerce')
     df=df.sort_values(by= 'FECHA', ascending=False)
 
     gestion_day     =   df[df['FECHA'] == day_report]
-
+    
     if len(gestion_day) <=1:
         print(  f'-----------------------------\n' 
                 f'No se genera reporte para el dia {day_report}, ya que no se tiene registro de gestiones.\n'
@@ -109,13 +110,14 @@ def manipulation_gestion_table(df=None, type=None, name=None, month_report=None)
     folder='procesed\gestiones\df_gestiones'
         
     if type == 1:
+        
         df_result = group_table_gestor(df=df)
         df_result = calculate_aht_acw(df_result)
         
         #Cambio de nombre para el encabezado de las nuevas filas
         df_result.loc[len(df_result) - 2, ['NOMBRE','COORDINADORA', 'llave', 'MES'] ] = ['Suma','-', 'Suma10','']
         df_result.loc[len(df_result) - 1, ['NOMBRE','COORDINADORA', 'llave', 'MES'] ] = ['Promedio','-', 'Promedio10','']
-  
+        
         save_query(df=df_result, name=name, folder=folder)
         
     elif type == 2:
